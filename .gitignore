@@ -1,0 +1,11 @@
+# Binaries
+meo-repo-manager
+
+# Config
+config.yaml
+
+# OS specific
+.DS_Store
+
+# Go
+vendor/
