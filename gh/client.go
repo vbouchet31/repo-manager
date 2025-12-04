@@ -35,8 +35,8 @@ func NewClient() *Client {
 
 func (c *Client) CreateRepository(org, name string) error {
 	repo := &github.Repository{
-		Name:    github.String(name),
-		Private: github.Bool(true), // Default to private, maybe make configurable?
+		Name:    github.Ptr(name),
+		Private: github.Ptr(true), // Default to private, maybe make configurable?
 	}
 
 	_, _, err := c.client.Repositories.Create(c.ctx, org, repo)

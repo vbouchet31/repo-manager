@@ -27,7 +27,10 @@ func runCreate(cmd *cobra.Command, args []string) {
 	prompt := &survey.Input{
 		Message: "Repository Name:",
 	}
-	survey.AskOne(prompt, &name)
+	if err := survey.AskOne(prompt, &name); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
 
 	prefix := config.AppConfig.Prefix
 	if prefix != "" {
@@ -46,7 +49,10 @@ func runCreate(cmd *cobra.Command, args []string) {
 			Options: config.AppConfig.Users,
 			Default: config.AppConfig.Users,
 		}
-		survey.AskOne(userPrompt, &selectedUsers)
+		if err := survey.AskOne(userPrompt, &selectedUsers); err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
 	}
 
 	// 3. Add More Users
@@ -55,14 +61,20 @@ func runCreate(cmd *cobra.Command, args []string) {
 		Message: "Add more users?",
 		Default: false,
 	}
-	survey.AskOne(confirmMore, &addMore)
+	if err := survey.AskOne(confirmMore, &addMore); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
 
 	if addMore {
 		var moreUsersStr string
 		moreUsersPrompt := &survey.Input{
 			Message: "Enter usernames (comma separated):",
 		}
-		survey.AskOne(moreUsersPrompt, &moreUsersStr)
+		if err := survey.AskOne(moreUsersPrompt, &moreUsersStr); err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
 		if moreUsersStr != "" {
 			parts := strings.Split(moreUsersStr, ",")
 			for _, p := range parts {
@@ -86,7 +98,10 @@ func runCreate(cmd *cobra.Command, args []string) {
 		Message: "Proceed with creation?",
 		Default: false,
 	}
-	survey.AskOne(confirmPrompt, &confirm)
+	if err := survey.AskOne(confirmPrompt, &confirm); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
 
 	if !confirm {
 		fmt.Println("Aborted.")
