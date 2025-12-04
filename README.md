@@ -45,6 +45,12 @@ users:
     export GITHUB_TOKEN=your_github_pat
     ```
 
+    Alternatively, you can pass the token using the `--github-token` flag:
+
+    ```bash
+    ./meo-repo-manager create --github-token your_github_pat
+    ```
+
 2.  **Run the `create` command**:
 
     ```bash

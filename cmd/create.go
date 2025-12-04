@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"meo-repo-manager/config"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var createCmd = &cobra.Command{
@@ -22,6 +24,22 @@ func init() {
 }
 
 func runCreate(cmd *cobra.Command, args []string) {
+	// 0. Validate Token
+	token := viper.GetString("github-token")
+	if token == "" {
+		token = os.Getenv("GITHUB_TOKEN")
+	}
+	if token == "" {
+		fmt.Println("Error: GitHub token is required. Set GITHUB_TOKEN env var or use --github-token flag.")
+		return
+	}
+
+	client := gh.NewClient(token)
+	if err := client.Validate(); err != nil {
+		fmt.Printf("Failed!\nError: %v\n", err)
+		return
+	}
+
 	// 1. Repository Name
 	var name string
 	prompt := &survey.Input{
@@ -109,7 +127,6 @@ func runCreate(cmd *cobra.Command, args []string) {
 	}
 
 	// 6. Execution
-	client := gh.NewClient()
 	fmt.Printf("Creating repository %s/%s...\n", config.AppConfig.Organization, name)
 	if err := client.CreateRepository(config.AppConfig.Organization, name); err != nil {
 		fmt.Printf("Error creating repository: %v\n", err)

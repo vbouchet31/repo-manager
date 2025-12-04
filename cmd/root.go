@@ -7,6 +7,7 @@ import (
 	"meo-repo-manager/config"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var rootCmd = &cobra.Command{
@@ -27,6 +28,11 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ./config.yaml)")
+	rootCmd.PersistentFlags().String("github-token", "", "GitHub token (overrides GITHUB_TOKEN env var)")
+	if err := viper.BindPFlag("github-token", rootCmd.PersistentFlags().Lookup("github-token")); err != nil {
+		fmt.Printf("Error binding flag: %v\n", err)
+		os.Exit(1)
+	}
 }
 
 func initConfig() {
