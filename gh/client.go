@@ -3,7 +3,6 @@ package gh
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/google/go-github/v69/github"
 	"golang.org/x/oauth2"
@@ -14,13 +13,7 @@ type Client struct {
 	ctx    context.Context
 }
 
-func NewClient() *Client {
-	token := os.Getenv("GITHUB_TOKEN")
-	if token == "" {
-		fmt.Println("Warning: GITHUB_TOKEN environment variable is not set.")
-		return &Client{client: github.NewClient(nil), ctx: context.Background()}
-	}
-
+func NewClient(token string) *Client {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
@@ -31,6 +24,14 @@ func NewClient() *Client {
 		client: github.NewClient(tc),
 		ctx:    ctx,
 	}
+}
+
+func (c *Client) Validate() error {
+	_, _, err := c.client.Users.Get(c.ctx, "")
+	if err != nil {
+		return fmt.Errorf("failed to validate token: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) CreateRepository(org, name string) error {
