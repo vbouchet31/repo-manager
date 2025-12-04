@@ -21,6 +21,8 @@ You can also specify a custom config file path using the `--config` flag.
 
 ### Example `config.yaml`
 
+A template file `config.example.yaml` is provided in the repository.
+
 ```yaml
 organization: "your-org"
 prefix: "prefix-"
@@ -56,3 +58,9 @@ users:
     ```bash
     ./meo-repo-manager create --config /path/to/my-config.yaml
     ```
+
+## Build
+
+```bash
+go build -o meo-repo-manager main.go
+```
