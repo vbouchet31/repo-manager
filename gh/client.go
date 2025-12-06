@@ -51,3 +51,64 @@ func (c *Client) AddCollaborator(owner, repo, user, permission string) error {
 	_, _, err := c.client.Repositories.AddCollaborator(c.ctx, owner, repo, user, opts)
 	return err
 }
+
+func (c *Client) GetRepository(org, name string) (*github.Repository, error) {
+	repo, _, err := c.client.Repositories.Get(c.ctx, org, name)
+	return repo, err
+}
+
+func (c *Client) ListRepositories(org, prefix string) ([]*github.Repository, error) {
+	opts := &github.RepositoryListByOrgOptions{
+		ListOptions: github.ListOptions{PerPage: 100},
+		Sort:        "created",
+		Direction:   "desc",
+	}
+
+	var allRepos []*github.Repository
+	for {
+		repos, resp, err := c.client.Repositories.ListByOrg(c.ctx, org, opts)
+		if err != nil {
+			return nil, err
+		}
+		for _, repo := range repos {
+			if repo.Name != nil && (prefix == "" || (len(*repo.Name) >= len(prefix) && (*repo.Name)[0:len(prefix)] == prefix)) {
+				allRepos = append(allRepos, repo)
+			}
+		}
+		if resp.NextPage == 0 {
+			break
+		}
+		opts.Page = resp.NextPage
+	}
+	return allRepos, nil
+}
+
+func (c *Client) ListCollaborators(owner, repo string) ([]*github.User, error) {
+	opts := &github.ListCollaboratorsOptions{
+		ListOptions: github.ListOptions{PerPage: 100},
+		Affiliation: "all",
+	}
+	var allUsers []*github.User
+	for {
+		users, resp, err := c.client.Repositories.ListCollaborators(c.ctx, owner, repo, opts)
+		if err != nil {
+			return nil, err
+		}
+		allUsers = append(allUsers, users...)
+		if resp.NextPage == 0 {
+			break
+		}
+		opts.Page = resp.NextPage
+	}
+	return allUsers, nil
+}
+
+func (c *Client) RemoveCollaborator(owner, repo, user string) error {
+	_, err := c.client.Repositories.RemoveCollaborator(c.ctx, owner, repo, user)
+	return err
+}
+
+func (c *Client) GetPermissionLevel(owner, repo, user string) (*github.RepositoryPermissionLevel, error) {
+	perm, _, err := c.client.Repositories.GetPermissionLevel(c.ctx, owner, repo, user)
+	return perm, err
+}

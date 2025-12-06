@@ -59,7 +59,21 @@ users:
 
     Follow the interactive prompts to name your repository and select users.
 
-3.  **Using a custom config file**:
+3.  **Run the `manage` command**:
+
+    To manage an existing repository (add/remove users):
+
+    ```bash
+    ./meo-repo-manager manage
+    ```
+
+    You can also specify the repository directly:
+
+    ```bash
+    ./meo-repo-manager manage --repo my-repo-name
+    ```
+
+4.  **Using a custom config file**:
 
     ```bash
     ./meo-repo-manager create --config /path/to/my-config.yaml
